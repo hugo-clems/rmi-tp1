@@ -24,11 +24,11 @@ L'objectif de cette activité est le développement d'un serveur et d'un client 
 
 Lancer le serveur RMI:
 ```
-rmiregistry -J-Djava.rmi.server.codebase=file:/{Project-Path}/m2-pcr-rmi-etu/target/classes/
+rmiregistry -J-Djava.rmi.server.codebase=file:/Users/hugo/Documents/S9/rmi/target/classes/
 ```
 
 Lancer un main:
 Ajouter dans la configuration d'Intellij, dans VM Options
 ```
--Djava.rmi.server.codebase=file:/{Project-Path}/m2-pcr-rmi-etu/target/classes/
+-Djava.rmi.server.codebase=file:/Users/hugo/Documents/S9/rmi/target/classes/
 ```
