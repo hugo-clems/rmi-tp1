@@ -3,6 +3,9 @@ package m2dl.pcr.rmi;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.List;
 
 public class Ihm extends JDialog {
@@ -11,6 +14,8 @@ public class Ihm extends JDialog {
     private JButton buttonCancel;
     private JTextField messageToSend;
     private JList allMessages;
+
+    private static Message stub;
 
     public Ihm() {
         setContentPane(contentPane);
@@ -48,7 +53,7 @@ public class Ihm extends JDialog {
     }
 
     private void onOK() {
-        Client.sendMessage(messageToSend.getText());
+        sendMessage(messageToSend.getText());
         messageToSend.setText("");
         loadMessages();
     }
@@ -58,14 +63,45 @@ public class Ihm extends JDialog {
     }
 
     private void loadMessages() {
-        List<String> messages = Client.getMessages();
+        List<String> messages = getMessages();
         allMessages.setListData(messages.toArray());
     }
 
     public static void main(String[] args) {
-        Ihm dialog = new Ihm();
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
+        String host = (args.length < 1) ? null : args[0];
+
+        try {
+            Registry registry = LocateRegistry.getRegistry(host);
+            stub = (Message) registry.lookup("Message");
+
+            // Ouverture de l'interface
+            Ihm dialog = new Ihm();
+            dialog.pack();
+            dialog.setVisible(true);
+            System.exit(0);
+        } catch (Exception e) {
+            System.err.println("Client exception: " + e.toString());
+            e.printStackTrace();
+        }
     }
+
+    public static void sendMessage(String msg) {
+        try {
+            stub.sendMessage(msg);
+        } catch (RemoteException e) {
+            System.err.println("Client exception: " + e.toString());
+            e.printStackTrace();
+        }
+    }
+
+    public static List<String> getMessages() {
+        try {
+            return stub.getMessages();
+        } catch (RemoteException e) {
+            System.err.println("Client exception: " + e.toString());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
